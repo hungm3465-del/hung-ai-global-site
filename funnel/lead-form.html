@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đăng ký tư vấn | HÙNG AI GLOBAL</title>
+  <style>
+    :root{--bg:#050505;--panel:#111114;--text:#fff8ec;--muted:#b9ad9b;--gold:#ffd36a;--orange:#ff6a00;--line:rgba(255,211,106,.22)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 75% 0,rgba(255,106,0,.28),transparent 35%),#050505;color:var(--text);min-height:100vh;display:grid;place-items:center;padding:24px}
+    .box{width:100%;max-width:720px;border:1px solid var(--line);border-radius:32px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));padding:34px;box-shadow:0 32px 100px rgba(255,106,0,.18)}
+    .brand{font-weight:950;letter-spacing:.08em;color:var(--gold);margin-bottom:18px}h1{font-size:clamp(34px,6vw,56px);line-height:1;margin:0 0 14px;letter-spacing:-.05em}.lead{color:var(--muted);line-height:1.7;font-size:18px;margin-bottom:26px}
+    label{display:block;margin:16px 0 7px;font-weight:800}input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.13);border-radius:16px;background:#0b0b0d;color:var(--text);padding:15px;font-size:16px;outline:none}textarea{min-height:110px;resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn{width:100%;margin-top:22px;border:0;border-radius:999px;padding:16px 22px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#170900;font-weight:950;font-size:16px;cursor:pointer}.note{color:var(--muted);font-size:13px;margin-top:14px;line-height:1.5}.quick{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.quick a{color:var(--gold);border:1px solid var(--line);padding:10px 13px;border-radius:999px;text-decoration:none}@media(max-width:680px){.grid{grid-template-columns:1fr}.box{padding:24px}}
+  </style>
+</head>
+<body>
+  <main class="box">
+    <div class="brand">HÙNG AI GLOBAL</div>
+    <h1>Đăng ký tư vấn hệ thống bán hàng tự động</h1>
+    <p class="lead">Điền thông tin bên dưới. Hệ thống sẽ tạo sẵn nội dung tư vấn để gửi qua điện thoại/Zalo. Bản nâng cấp sau có thể ghi thẳng vào Google Sheet và bot tự thông báo.</p>
+    <form id="leadForm">
+      <div class="grid"><div><label>Họ tên</label><input name="name" required placeholder="Ví dụ: Nguyễn Văn A"></div><div><label>Số điện thoại</label><input name="phone" required placeholder="Ví dụ: 09xxxxxxxx"></div></div>
+      <label>Nhu cầu chính</label><select name="need"><option>Tư vấn xây hệ thống bán hàng tự động</option><option>Thiết kế landing page</option><option>Kết nối bot/automation</option><option>Affiliate/sản phẩm số</option><option>Khác</option></select>
+      <label>Mô tả thêm</label><textarea name="message" placeholder="Bạn đang bán sản phẩm/dịch vụ gì? Muốn tự động hóa phần nào?"></textarea>
+      <button class="btn" type="submit">Gửi thông tin tư vấn</button>
+    </form>
+    <div class="quick"><a href="tel:0862772787">Gọi 0862772787</a><a href="../index.html">Về trang chính</a></div>
+    <p class="note">Thông tin hiện được lưu tạm trên trình duyệt và chuyển sang trang cảm ơn. Để tự động ghi dữ liệu thật, cần kết nối Google Sheet/Form backend.</p>
+  </main>
+<script>
+document.getElementById('leadForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const oldText = btn.textContent;
+  btn.textContent = 'Đang gửi...';
+  btn.disabled = true;
+
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  data.source = 'HÙNG AI GLOBAL landing page';
+  localStorage.setItem('hung_ai_global_last_lead', JSON.stringify({...data, time:new Date().toISOString()}));
+
+  try {
+    await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    console.warn('Lead API unavailable, continuing to thank-you page', err);
+  }
+
+  const text = encodeURIComponent(`Khách đăng ký tư vấn HÙNG AI GLOBAL\nTên: ${data.name}\nSĐT: ${data.phone}\nNhu cầu: ${data.need}\nGhi chú: ${data.message||'Không có'}`);
+  location.href = `thank-you.html?lead=${text}`;
+});
+</script>
+</body>
+</html>
