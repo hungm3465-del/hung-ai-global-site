@@ -1,0 +1,13 @@
+{
+  "name": "hung-ai-global-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npx serve .",
+    "deploy:vercel": "npx vercel --prod"
+  },
+  "devDependencies": {
+    "serve": "latest",
+    "vercel": "latest"
+  }
+}
